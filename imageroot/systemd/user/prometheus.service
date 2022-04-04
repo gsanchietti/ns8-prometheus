@@ -3,7 +3,7 @@
 # Most parts of this file come from podman-generate-systemd.
 #
 [Unit]
-Description=prometheus server
+Description=Prometheus server
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -17,8 +17,11 @@ ExecStart=/usr/bin/podman run \
     --cidfile=%t/prometheus.ctr-id \
     --cgroups=no-conmon \
     --replace --name=%N \
-    --publish=127.0.0.1:${TCP_PORT}:8080 \
-    ${ECHO_SERVER_IMAGE}
+    --publish=127.0.0.1:${TCP_PORT}:9090 \
+    --network=slirp4netns:allow_host_loopback=true --add-host=node:10.0.2.2 \
+    --volume=%S/state/prometheus.yml:/prometheus/prometheus.yml \
+    --volume=prometheus-data:/prometheus \
+    ${PROMETHEUS_IMAGE} --web.external-url=/prometheus/
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/prometheus.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/prometheus.ctr-id
 PIDFile=%t/prometheus.pid

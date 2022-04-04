@@ -16,24 +16,20 @@ Output example:
 ## Configure
 
 Let's assume that the prometheus instance is named `prometheus1`.
-
-Launch `configure-module`, by setting the following parameters:
-- `<MODULE_PARAM1_NAME>`: <MODULE_PARAM1_DESCRIPTION>
-- `<MODULE_PARAM2_NAME>`: <MODULE_PARAM2_DESCRIPTION>
-- ...
+The instance doesn't start automatically, to enable it just run:
 
 Example:
 
     api-cli run module/prometheus1/configure-module --data '{}'
 
 The above command will:
+- generate a random URL to access prometheus
 - start and configure the prometheus instance
-- (describe configuration process)
-- ...
 
 Send a test HTTP request to the prometheus backend service:
 
-    curl http://127.0.0.1/prometheus/
+    source /home/prometheus1/.config/state/environment 
+    curl http://127.0.0.1/${PROMETHEUS_PATH}/
 
 ## Uninstall
 
