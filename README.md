@@ -1,9 +1,9 @@
-# ns8-kickstart
+# ns8-prometheus
 
 This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
 To start a new module from it:
 
-1. Click on [Use this template](https://github.com/NethServer/ns8-kickstart/generate).
+1. Click on [Use this template](https://github.com/NethServer/ns8-prometheus/generate).
    Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
    Do not end your module name with a number, like ~~`ns8-baaad2`~~!
 
@@ -21,16 +21,16 @@ To start a new module from it:
 
 Instantiate the module with:
 
-    add-module ghcr.io/nethserver/kickstart:latest 1
+    add-module ghcr.io/nethserver/prometheus:latest 1
 
 The output of the command will return the instance name.
 Output example:
 
-    {"module_id": "kickstart1", "image_name": "kickstart", "image_url": "ghcr.io/nethserver/kickstart:latest"}
+    {"module_id": "prometheus1", "image_name": "prometheus", "image_url": "ghcr.io/nethserver/prometheus:latest"}
 
 ## Configure
 
-Let's assume that the kickstart instance is named `kickstart1`.
+Let's assume that the prometheus instance is named `prometheus1`.
 
 Launch `configure-module`, by setting the following parameters:
 - `<MODULE_PARAM1_NAME>`: <MODULE_PARAM1_DESCRIPTION>
@@ -39,28 +39,28 @@ Launch `configure-module`, by setting the following parameters:
 
 Example:
 
-    api-cli run module/kickstart1/configure-module --data '{}'
+    api-cli run module/prometheus1/configure-module --data '{}'
 
 The above command will:
-- start and configure the kickstart instance
+- start and configure the prometheus instance
 - (describe configuration process)
 - ...
 
-Send a test HTTP request to the kickstart backend service:
+Send a test HTTP request to the prometheus backend service:
 
-    curl http://127.0.0.1/kickstart/
+    curl http://127.0.0.1/prometheus/
 
 ## Uninstall
 
 To uninstall the instance:
 
-    remove-module --no-preserve kickstart1
+    remove-module --no-preserve prometheus1
 
 ## Testing
 
 Test the module using the `test-module.sh` script:
 
 
-    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/kickstart:latest
+    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/prometheus:latest
 
 The tests are made using [Robot Framework](https://robotframework.org/)
