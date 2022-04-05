@@ -18,7 +18,7 @@ Output example:
 Let's assume that the prometheus instance is named `prometheus1`.
 The instance starts automatically, the create-module will:
 - generate a random URL to access prometheus
-- start and configure the prometheus instance to scrape local node_exporter
+- start and configure the prometheus instance to scrape local node_exporter and loki metrics
 
 HTTP to HTTPS redirect and Let's Encrypt certificate are disabled.
 
