@@ -57,8 +57,8 @@ if os.path.exists('prometheus.yml'):
 
 # Setup default scraping for local node
 rdb = agent.redis_connect()
-default_instance = rdb.get(f'node/{os.environ["NODE_ID"]}/default_instance/node_exporter')
-node_path = rdb.hget(f'module/{default_instance}/environment', 'NODE_EXPORTER_PATH')
+default_instance = rdb.get(f'node/{os.environ["NODE_ID"]}/default_instance/node_exporter')  or "node_exporter1"
+node_path = rdb.hget(f'module/{default_instance}/environment', 'NODE_EXPORTER_PATH') or "/metrics"
 with open('prometheus.yml', 'w') as fp:
     fp.write("global:\n")
     fp.write("scrape_configs:\n")
