@@ -40,11 +40,23 @@
         <NsInfoCard
           light
           :title="status.instance || '-'"
-          :description="$t('status.app_instance')"
           :icon="Application32"
           :loading="loading.getStatus"
           class="min-height-card"
-        />
+        >
+          <template #content>
+            <div class="card-content">
+              <div class="row">
+                {{ $t("status.app_url") }}:
+                <a
+                  target="_blank"
+                  :href="`http://${config.fqdn}/${config.path}`"
+                  >/{{ config.path }}</a
+                >
+              </div>
+            </div>
+          </template>
+        </NsInfoCard>
       </cv-column>
       <cv-column :md="4" :max="4">
         <NsInfoCard
@@ -271,6 +283,10 @@ export default {
       urlCheckInterval: null,
       isRedirectChecked: false,
       redirectTimeout: 0,
+      config: {
+        fqdn: "",
+        path: "",
+      },
       status: {
         instance: "",
         services: [],
@@ -333,6 +349,7 @@ export default {
   },
   created() {
     this.getStatus();
+    this.getConfig();
     this.listBackupRepositories();
   },
   methods: {
@@ -382,6 +399,54 @@ export default {
       this.status = taskResult.output;
       this.loading.getStatus = false;
     },
+
+    async getConfig() {
+      this.loading.getStatus = true;
+      this.error.getStatus = "";
+      const taskAction = "get-configuration";
+      const eventId = this.getUuid();
+
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.getConfigurationAborted
+      );
+
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.getConfigurationCompleted
+      );
+
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.getStatus = this.getErrorMessage(err);
+        this.loading.getStatus = false;
+        return;
+      }
+    },
+    getConfigurationAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.getStatus = this.$t("error.generic_error");
+      this.loading.getStatus = false;
+    },
+    getConfigurationCompleted(taskContext, taskResult) {
+      this.config = taskResult.output;
+      this.loading.getStatus = false;
+    },
+
     async listBackupRepositories() {
       this.loading.listBackupRepositories = true;
       this.error.listBackupRepositories = "";

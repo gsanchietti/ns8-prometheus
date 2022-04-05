@@ -23,7 +23,9 @@
 import json
 import sys
 import agent
+import socket
+import os
 
-config = {}
+config = {"fqdn": socket.getfqdn(), "path": os.environ['PROMETHEUS_PATH']}
 
 json.dump(config, fp=sys.stdout)
