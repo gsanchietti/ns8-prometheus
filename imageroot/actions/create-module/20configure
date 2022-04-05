@@ -30,10 +30,9 @@ import agent.tasks
 
 request = json.load(sys.stdin)
 
-path = agent.get_env("PROMETHEUS_PATH", path)
-if not path:
-    path = uuid.uuid4().hex
-    agent.set_env("PROMETHEUS_PATH", path)
+path = uuid.uuid4().hex
+agent.set_env("PROMETHEUS_PATH", path)
+agent.dump_env()
 
 # Configure Traefik to route "/prometheus" path requests to the prometheus service
 response = agent.tasks.run(

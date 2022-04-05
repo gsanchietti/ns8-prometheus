@@ -16,15 +16,11 @@ Output example:
 ## Configure
 
 Let's assume that the prometheus instance is named `prometheus1`.
-The instance doesn't start automatically, to enable it just run:
-
-Example:
-
-    api-cli run module/prometheus1/configure-module --data '{}'
-
-The above command will:
+The instance starts automatically, the create-module will:
 - generate a random URL to access prometheus
-- start and configure the prometheus instance
+- start and configure the prometheus instance to scrape local node_exporter
+
+HTTP to HTTPS redirect and Let's Encrypt certificate are disabled.
 
 Send a test HTTP request to the prometheus backend service:
 
