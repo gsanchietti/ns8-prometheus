@@ -16,11 +16,11 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-prometheus container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-prometheus; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-prometheus -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-prometheus -v "${PWD}:/usr/src:Z" docker.io/library/node:18.13.0-alpine
 fi
 
 echo "Build static UI files with node..."
-buildah run nodebuilder-prometheus sh -c "cd /usr/src/ui && yarn install && yarn build"
+buildah run --env="NODE_OPTIONS=--openssl-legacy-provider" nodebuilder-prometheus sh -c "cd /usr/src/ui && yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
@@ -30,7 +30,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=quay.io/prometheus/prometheus:v2.34.0" \
+    --label="org.nethserver.images=quay.io/prometheus/prometheus:v2.37.5" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
@@ -49,7 +49,7 @@ images+=("${repobase}/${reponame}")
 #
 
 #
-# Setup CI when pushing to Github. 
+# Setup CI when pushing to Github.
 # Warning! docker::// protocol expects lowercase letters (,,)
 if [[ -n "${CI}" ]]; then
     # Set output value for Github Actions
