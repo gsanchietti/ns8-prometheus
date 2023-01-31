@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import os
+
+import jsonschema
+from jsonschema import validate
+import agent
+
+# connect to client and fetch providers for prometheus
+redis_client = agent.redis_connect(use_replica=True)
+providers = agent.list_service_providers(redis_client, 'prometheus-metrics', 'http')
+
+# Get validation file from bin directory
+with open('../bin/validation.json', 'r', encoding='utf-8') as file:
+    schema = json.load(file)
+
+for provider in providers:
+    # load provider info and validate
+    configuration = json.loads(provider['config'])
+    try:
+        validate(instance=configuration, schema=schema)
+    except jsonschema.exceptions.ValidationError as err:
+        print(f"Service provider {provider['module_id']} returned non-valid data.")
+        continue
+
+    # Generate configuration file
+    with open(f"prometheus.d/{provider['module_id']}.yml", 'w', encoding='utf-8') as file:
+        file.write('- targets:\n')
+        for target in configuration['hosts']:
+            file.write(f"    - '{target}'\n")
+        file.write('  labels:\n')
+        file.write(f"    node: {provider['node']}\n")
+        file.write(f"    module: {provider['module_id']}\n")
+        for key, value in configuration['labels'].items():
+            file.write(f"    {key}: {value}\n")
+
+# Check if configuration files exists for non returning service provider
+with os.scandir('prometheus.d') as it:
+    files = list(map(lambda provider: f"{provider['module_id']}.yml", providers))
+    for entry in it:
+        # delete the file if it's not a provider.
+        if entry.is_file() and entry.name not in files:
+            os.remove(entry.path)
