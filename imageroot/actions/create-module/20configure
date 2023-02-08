@@ -24,15 +24,14 @@ import os
 import sys
 import json
 import uuid
+
 import agent
-import os.path
 import agent.tasks
 
 request = json.load(sys.stdin)
 
-path = uuid.uuid4().hex
-agent.set_env("PROMETHEUS_PATH", path)
-agent.dump_env()
+PATH = uuid.uuid4().hex
+agent.set_env("PROMETHEUS_PATH", PATH)
 
 # Configure Traefik to route "/prometheus" path requests to the prometheus service
 response = agent.tasks.run(
@@ -40,34 +39,31 @@ response = agent.tasks.run(
     action='set-route',
     data={
         'instance': os.environ['MODULE_ID'],
-        'url':  'http://127.0.0.1:' + os.environ["TCP_PORT"],
+        'url': 'http://127.0.0.1:' + os.environ["TCP_PORT"],
         'http2https': False,
         'lets_encrypt': False,
-        'path': f'/{path}',
+        'path': f'/{PATH}',
     },
 )
 
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
 
-# Setup default scraping for local node
-rdb = agent.redis_connect()
-default_instance = rdb.get(f'node/{os.environ["NODE_ID"]}/default_instance/node_exporter')  or "node_exporter1"
-node_path = rdb.hget(f'module/{default_instance}/environment', 'NODE_EXPORTER_PATH') or "/metrics"
-
 # Read loki config from local node
 logcli = agent.read_envfile("/etc/nethserver/logcli.env")
 
-with open('prometheus.yml', 'w') as fp:
+with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write("global:\n")
     fp.write("scrape_configs:\n")
-    fp.write('  - job_name: "node"\n')
-    fp.write(f'    metrics_path: "{node_path}"\n')
-    fp.write('    static_configs:\n')
-    fp.write('      - targets: ["10.0.2.2"]\n')
     fp.write('  - job_name: "loki"\n')
     fp.write('    basic_auth:\n')
     fp.write(f'      username: "{logcli["LOKI_USERNAME"]}"\n')
     fp.write(f'      password: "{logcli["LOKI_PASSWORD"]}"\n')
     fp.write('    static_configs:\n')
     fp.write(f'      - targets: ["{logcli["LOKI_ADDR"].removeprefix("http://")}"]\n')
+    fp.write('  - job_name: "providers"\n')
+    fp.write('    file_sd_configs:\n')
+    fp.write('      - files:\n')
+    fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
+
+agent.run_helper('mkdir', 'prometheus.d')
