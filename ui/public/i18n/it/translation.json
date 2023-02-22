@@ -1,1 +1,58 @@
-{}
+{
+    "status": {
+        "mount": "",
+        "no_images": "",
+        "title": "",
+        "app_instance": "",
+        "installation_node": "",
+        "app_volumes": "",
+        "name": "",
+        "created": "",
+        "node": "",
+        "no_volumes": "",
+        "no_services": "",
+        "size": "",
+        "app_images": "",
+        "services": "",
+        "app_url": ""
+    },
+    "error": {
+        "cannot_retrieve_module_info": "",
+        "404": "",
+        "403": "",
+        "validation_error": "",
+        "generic_error": "",
+        "401": "",
+        "network_timeout": "",
+        "error": "",
+        "network_error": "",
+        "cannot_retrieve_installed_modules": ""
+    },
+    "about": {
+        "title": ""
+    },
+    "action": {
+        "list-installed-modules": "",
+        "get-status": "",
+        "get-configuration": "",
+        "list-backup-repositories": "",
+        "configure-module": "",
+        "list-backups": "",
+        "get-name": "",
+        "get-module-info": ""
+    },
+    "settings": {
+        "test_filed": "",
+        "save": "",
+        "configure_instance": "",
+        "title": ""
+    },
+    "common": {
+        "required": "",
+        "work_in_progress": "",
+        "processing": ""
+    },
+    "task": {
+        "cannot_create_task": ""
+    }
+}
