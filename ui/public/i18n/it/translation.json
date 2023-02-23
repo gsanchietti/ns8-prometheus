@@ -3,21 +3,21 @@
         "mount": "",
         "no_images": "Nessuna immagine",
         "title": "Stato",
-        "app_instance": "",
+        "app_instance": "Istanza app",
         "installation_node": "",
-        "app_volumes": "",
+        "app_volumes": "Volume app|Volumi app",
         "name": "Nome",
         "created": "Creato",
         "node": "Nodo",
         "no_volumes": "Nessun volume",
         "no_services": "Nessun servizio",
         "size": "Dimensione",
-        "app_images": "",
+        "app_images": "Immagine app|Immagini app",
         "services": "Servizio | Servizi",
         "app_url": ""
     },
     "error": {
-        "cannot_retrieve_module_info": "",
+        "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
         "404": "Risorsa non trovata",
         "403": "",
         "validation_error": "Errore di validazione",
@@ -26,10 +26,10 @@
         "network_timeout": "",
         "error": "Errore",
         "network_error": "Errore di rete",
-        "cannot_retrieve_installed_modules": ""
+        "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati"
     },
     "about": {
-        "title": ""
+        "title": "Informazioni"
     },
     "action": {
         "list-installed-modules": "",
@@ -53,6 +53,6 @@
         "processing": ""
     },
     "task": {
-        "cannot_create_task": ""
+        "cannot_create_task": "Impossibile eseguire task [action]"
     }
 }
