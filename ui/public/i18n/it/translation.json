@@ -1,10 +1,10 @@
 {
     "status": {
-        "mount": "",
+        "mount": "Percorso di mount",
         "no_images": "Nessuna immagine",
         "title": "Stato",
         "app_instance": "Istanza app",
-        "installation_node": "",
+        "installation_node": "Nodo",
         "app_volumes": "Volume app|Volumi app",
         "name": "Nome",
         "created": "Creato",
@@ -32,14 +32,14 @@
         "title": "Informazioni"
     },
     "action": {
-        "list-installed-modules": "",
-        "get-status": "",
-        "get-configuration": "",
-        "list-backup-repositories": "",
+        "list-installed-modules": "Elenca moduli installati",
+        "get-status": "Visualizza stato",
+        "get-configuration": "Visualizza configurazione",
+        "list-backup-repositories": "Elenca repository di backup",
         "configure-module": "Configura modulo",
-        "list-backups": "",
-        "get-name": "",
-        "get-module-info": ""
+        "list-backups": "Elenca backup",
+        "get-name": "Visualizza nome",
+        "get-module-info": "Visualizza info modulo"
     },
     "settings": {
         "test_filed": "",
@@ -49,8 +49,8 @@
     },
     "common": {
         "required": "Obbligatorio",
-        "work_in_progress": "",
-        "processing": ""
+        "work_in_progress": "In lavorazione",
+        "processing": "Elaborazione in corso..."
     },
     "task": {
         "cannot_create_task": "Impossibile eseguire task [action]"
