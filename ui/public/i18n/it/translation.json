@@ -1,31 +1,31 @@
 {
     "status": {
         "mount": "",
-        "no_images": "",
-        "title": "",
+        "no_images": "Nessuna immagine",
+        "title": "Stato",
         "app_instance": "",
         "installation_node": "",
         "app_volumes": "",
-        "name": "",
-        "created": "",
-        "node": "",
-        "no_volumes": "",
-        "no_services": "",
-        "size": "",
+        "name": "Nome",
+        "created": "Creato",
+        "node": "Nodo",
+        "no_volumes": "Nessun volume",
+        "no_services": "Nessun servizio",
+        "size": "Dimensione",
         "app_images": "",
-        "services": "",
+        "services": "Servizio | Servizi",
         "app_url": ""
     },
     "error": {
         "cannot_retrieve_module_info": "",
-        "404": "",
+        "404": "Risorsa non trovata",
         "403": "",
-        "validation_error": "",
+        "validation_error": "Errore di validazione",
         "generic_error": "",
         "401": "",
         "network_timeout": "",
-        "error": "",
-        "network_error": "",
+        "error": "Errore",
+        "network_error": "Errore di rete",
         "cannot_retrieve_installed_modules": ""
     },
     "about": {
@@ -36,19 +36,19 @@
         "get-status": "",
         "get-configuration": "",
         "list-backup-repositories": "",
-        "configure-module": "",
+        "configure-module": "Configura modulo",
         "list-backups": "",
         "get-name": "",
         "get-module-info": ""
     },
     "settings": {
         "test_filed": "",
-        "save": "",
-        "configure_instance": "",
-        "title": ""
+        "save": "Salva",
+        "configure_instance": "Configura {instance}",
+        "title": "Impostazioni"
     },
     "common": {
-        "required": "",
+        "required": "Obbligatorio",
         "work_in_progress": "",
         "processing": ""
     },
