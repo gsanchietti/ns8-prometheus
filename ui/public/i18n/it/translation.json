@@ -19,11 +19,11 @@
     "error": {
         "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
         "404": "Risorsa non trovata",
-        "403": "",
+        "403": "Operazione non autorizzata",
         "validation_error": "Errore di validazione",
-        "generic_error": "",
-        "401": "",
-        "network_timeout": "",
+        "generic_error": "Qualcosa è andato storto",
+        "401": "Autenticazione non valida",
+        "network_timeout": "Timeout di rete",
         "error": "Errore",
         "network_error": "Errore di rete",
         "cannot_retrieve_installed_modules": "Impossibile elencare moduli installati"
@@ -53,6 +53,6 @@
         "processing": "Elaborazione in corso..."
     },
     "task": {
-        "cannot_create_task": "Impossibile eseguire task [action]"
+        "cannot_create_task": "Impossibile eseguire task {action}"
     }
 }
