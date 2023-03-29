@@ -42,7 +42,7 @@
         "get-module-info": "Visualizza info modulo"
     },
     "settings": {
-        "test_filed": "",
+        "test_filed": "Test field",
         "save": "Salva",
         "configure_instance": "Configura {instance}",
         "title": "Impostazioni"
