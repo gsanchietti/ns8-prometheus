@@ -24,8 +24,7 @@
   "settings": {
     "title": "Settings",
     "configure_instance": "Configure {instance}",
-    "save": "Save",
-    "test_filed": "Test field"
+    "save": "Save"
   },
   "about": {
     "title": "About"
