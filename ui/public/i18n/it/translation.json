@@ -14,7 +14,7 @@
         "size": "Dimensione",
         "app_images": "Immagine app|Immagini app",
         "services": "Servizio | Servizi",
-        "app_url": ""
+        "app_url": "URL pubblico"
     },
     "error": {
         "cannot_retrieve_module_info": "Impossibile recuperare info modulo",
@@ -32,7 +32,7 @@
         "title": "Informazioni"
     },
     "action": {
-        "list-installed-modules": "Elenca moduli installati",
+        "list-installed-modules": "Lista moduli installati",
         "get-status": "Visualizza stato",
         "get-configuration": "Visualizza configurazione",
         "list-backup-repositories": "Elenca repository di backup",
