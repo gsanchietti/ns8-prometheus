@@ -1,7 +1,8 @@
 {
   "name": "prometheus",
   "description": {
-    "en": "Prometheus module"
+    "en": "Prometheus metrics storage",
+    "it": "Prometheus: archivio per le metriche"
   },
   "categories": [],
   "authors": [
