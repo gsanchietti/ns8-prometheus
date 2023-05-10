@@ -1,10 +1,10 @@
 {
-  "name": "prometheus",
+  "name": "Prometheus",
   "description": {
     "en": "Prometheus metrics storage",
     "it": "Prometheus: archivio per le metriche"
   },
-  "categories": [],
+  "categories": ["monitoring"],
   "authors": [
     {
       "name": "Giacomo Sanchietti",
