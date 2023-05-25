@@ -49,8 +49,19 @@ response = agent.tasks.run(
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
 
-# Read loki config from local node
-logcli = agent.read_envfile("/etc/nethserver/logcli.env")
+# Read loki config from local node env file or read it from redis
+path = "/etc/nethserver/logcli.env"
+if os.path.exists(path):
+    logcli = agent.read_envfile(path)
+else:
+    # we are not on the Leader
+    rdb = agent.redis_connect()
+    loki = rdb.get("cluster/default_instance/loki")
+    logcli = rdb.hgetall(f'module/{loki}/environment')
+    # we do not have exactly the same var name between redis and logcli.env
+    logcli["LOKI_ADDR"] = logcli["LOKI_ADDR"]+':'+logcli["LOKI_HTTP_PORT"]
+    logcli["LOKI_USERNAME"] = logcli['LOKI_API_AUTH_USERNAME']
+    logcli["LOKI_PASSWORD"] =  logcli['LOKI_API_AUTH_PASSWORD']
 
 with open('prometheus.yml', 'w', encoding='utf-8') as fp:
     fp.write("global:\n")
