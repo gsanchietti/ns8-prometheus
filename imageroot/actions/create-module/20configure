@@ -55,7 +55,10 @@ if os.path.exists(path):
     logcli = agent.read_envfile(path)
 else:
     # we are not on the Leader
-    rdb = agent.redis_connect()
+    # This script must rely on local node resources to ensure service startup
+    # even if the leader node is not reachable: connect to local Redis
+    # replica.
+    rdb = agent.redis_connect(use_replica=True)
     loki = rdb.get("cluster/default_instance/loki")
     logcli = rdb.hgetall(f'module/{loki}/environment')
     # we do not have exactly the same var name between redis and logcli.env
