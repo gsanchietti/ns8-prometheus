@@ -49,35 +49,3 @@ response = agent.tasks.run(
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
 
-# Read loki config from local node env file or read it from redis
-path = "/etc/nethserver/logcli.env"
-if os.path.exists(path):
-    logcli = agent.read_envfile(path)
-else:
-    # we are not on the Leader
-    # This script must rely on local node resources to ensure service startup
-    # even if the leader node is not reachable: connect to local Redis
-    # replica.
-    rdb = agent.redis_connect(use_replica=True)
-    loki = rdb.get("cluster/default_instance/loki")
-    logcli = rdb.hgetall(f'module/{loki}/environment')
-    # we do not have exactly the same var name between redis and logcli.env
-    logcli["LOKI_ADDR"] = logcli["LOKI_ADDR"]+':'+logcli["LOKI_HTTP_PORT"]
-    logcli["LOKI_USERNAME"] = logcli['LOKI_API_AUTH_USERNAME']
-    logcli["LOKI_PASSWORD"] =  logcli['LOKI_API_AUTH_PASSWORD']
-
-with open('prometheus.yml', 'w', encoding='utf-8') as fp:
-    fp.write("global:\n")
-    fp.write("scrape_configs:\n")
-    fp.write('  - job_name: "loki"\n')
-    fp.write('    basic_auth:\n')
-    fp.write(f'      username: "{logcli["LOKI_USERNAME"]}"\n')
-    fp.write(f'      password: "{logcli["LOKI_PASSWORD"]}"\n')
-    fp.write('    static_configs:\n')
-    fp.write(f'      - targets: ["{logcli["LOKI_ADDR"].removeprefix("http://")}"]\n')
-    fp.write('  - job_name: "providers"\n')
-    fp.write('    file_sd_configs:\n')
-    fp.write('      - files:\n')
-    fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
-
-agent.run_helper('mkdir', 'prometheus.d')
