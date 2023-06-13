@@ -49,21 +49,3 @@ response = agent.tasks.run(
 # Check if traefik configuration has been successfull
 agent.assert_exp(response['exit_code'] == 0)
 
-# Read loki config from local node
-logcli = agent.read_envfile("/etc/nethserver/logcli.env")
-
-with open('prometheus.yml', 'w', encoding='utf-8') as fp:
-    fp.write("global:\n")
-    fp.write("scrape_configs:\n")
-    fp.write('  - job_name: "loki"\n')
-    fp.write('    basic_auth:\n')
-    fp.write(f'      username: "{logcli["LOKI_USERNAME"]}"\n')
-    fp.write(f'      password: "{logcli["LOKI_PASSWORD"]}"\n')
-    fp.write('    static_configs:\n')
-    fp.write(f'      - targets: ["{logcli["LOKI_ADDR"].removeprefix("http://")}"]\n')
-    fp.write('  - job_name: "providers"\n')
-    fp.write('    file_sd_configs:\n')
-    fp.write('      - files:\n')
-    fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
-
-agent.run_helper('mkdir', 'prometheus.d')
