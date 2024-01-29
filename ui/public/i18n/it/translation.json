@@ -4,7 +4,7 @@
         "no_images": "Nessuna immagine",
         "title": "Stato",
         "app_instance": "Istanza app",
-        "installation_node": "Nodo",
+        "installation_node": "Nodo di installazione",
         "app_volumes": "Volume app|Volumi app",
         "name": "Nome",
         "created": "Creato",
@@ -32,7 +32,7 @@
         "title": "Informazioni"
     },
     "action": {
-        "list-installed-modules": "Elenco moduli installati",
+        "list-installed-modules": "Elenca moduli installati",
         "get-status": "Visualizza stato",
         "get-configuration": "Visualizza configurazione",
         "list-backup-repositories": "Elenca repository di backup",
