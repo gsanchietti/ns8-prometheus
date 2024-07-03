@@ -42,7 +42,6 @@
         "get-module-info": "Visualizza info modulo"
     },
     "settings": {
-        "test_filed": "Test field",
         "save": "Salva",
         "configure_instance": "Configura {instance}",
         "title": "Impostazioni"
@@ -50,9 +49,9 @@
     "common": {
         "required": "Obbligatorio",
         "work_in_progress": "In lavorazione",
-        "processing": "Elaborazione in corso..."
+        "processing": "In elaborazione…"
     },
     "task": {
-        "cannot_create_task": "Impossibile eseguire task {action}"
+        "cannot_create_task": "Impossibile eseguire il task {action}"
     }
 }
