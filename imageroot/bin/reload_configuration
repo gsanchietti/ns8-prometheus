@@ -7,62 +7,122 @@
 
 import json
 import os
+import yaml
 
 import jsonschema
 from jsonschema import validate
 import agent
 
+
+def generate_prometheus_config(redis_client):
+    loki = redis_client.get("cluster/default_instance/loki")
+    logcli = redis_client.hgetall(f'module/{loki}/environment')
+    # we want to build the loki address
+    logcli["LOKI_ADDR"] = logcli["LOKI_ADDR"] + ':' + logcli["LOKI_HTTP_PORT"]
+
+    with open('prometheus.yml', 'w', encoding='utf-8') as fp:
+        fp.write("global:\n")
+        fp.write("scrape_configs:\n")
+        fp.write('  - job_name: "loki"\n')
+        fp.write('    basic_auth:\n')
+        fp.write(f'      username: "{logcli["LOKI_API_AUTH_USERNAME"]}"\n')
+        fp.write(f'      password: "{logcli["LOKI_API_AUTH_PASSWORD"]}"\n')
+        fp.write('    static_configs:\n')
+        fp.write(f'      - targets: ["{logcli["LOKI_ADDR"].removeprefix("http://")}"]\n')
+        fp.write('  - job_name: "providers"\n')
+        fp.write('    file_sd_configs:\n')
+        fp.write('      - files:\n')
+        fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
+        fp.write('alerting:\n')
+        fp.write('  alertmanagers:\n')
+        fp.write('    - static_configs:\n')
+        fp.write('      - targets:\n')
+        fp.write('        - localhost:9093\n')
+        fp.write('rule_files:\n')
+        fp.write('  - "/prometheus/rules.d/*yml"\n')
+
+def validate_and_generate_provider_configs(providers):
+    # Get validation file from bin directory
+    with open('../bin/validation.json', 'r', encoding='utf-8') as file:
+        schema = json.load(file)
+
+    for provider in providers:
+        # load provider info and validate
+        configuration = json.loads(provider['config'])
+        try:
+            validate(instance=configuration, schema=schema)
+        except jsonschema.exceptions.ValidationError as err:
+            print(f"Service provider {provider['module_id']} returned non-valid data.")
+            continue
+
+        # Generate configuration file
+        with open(f"prometheus.d/{provider['module_id']}.yml", 'w', encoding='utf-8') as file:
+            file.write('- targets:\n')
+            for target in configuration['hosts']:
+                file.write(f"    - '{target}'\n")
+            file.write('  labels:\n')
+            file.write(f"    node: {provider['node']}\n")
+            file.write(f"    module: {provider['module_id']}\n")
+            for key, value in configuration['labels'].items():
+                file.write(f"    {key}: {value}\n")
+
+def clean_up_old_provider_configs(providers):
+    # Check if configuration files exist for non-returning service providers
+    with os.scandir('prometheus.d') as it:
+        files = list(map(lambda provider: f"{provider['module_id']}.yml", providers))
+        for entry in it:
+            # delete the file if it's not a provider.
+            if entry.is_file() and entry.name not in files:
+                os.remove(entry.path)
+
+def generate_alertmanagr_config():
+    alertmanager_config = {
+    'global': {},
+    'route': {
+        'receiver': 'default-receiver',
+        'group_by': ['alertname', 'node'],
+        'group_wait': '30s',
+        'group_interval': '5m',
+        'repeat_interval': '3h',
+        'routes': [
+        {
+            'matchers': ['service=~".*"'],
+            'receiver': 'default-receiver'
+        }
+        ]
+    },
+    'inhibit_rules': [
+        {
+        'source_matchers': ['severity="critical"'],
+        'target_matchers': ['severity="warning"'],
+        'equal': ['alertname']
+        }
+    ],
+    'receivers': [
+        {
+        'name': 'default-receiver',
+        'webhook_configs': [
+            {
+            'url': 'http://localhost:9095',
+            'send_resolved': True
+            }
+        ]
+        }
+    ]
+    }
+
+    with open('alertmanager.yml', 'w') as f:
+        yaml.dump(alertmanager_config, f, default_flow_style=False)
+
+
 # connect to client and fetch providers for prometheus
 redis_client = agent.redis_connect(use_replica=True)
 providers = agent.list_service_providers(redis_client, 'prometheus-metrics', 'http')
 
-loki = redis_client.get("cluster/default_instance/loki")
-logcli = redis_client.hgetall(f'module/{loki}/environment')
-# we want to build the loki address
-logcli["LOKI_ADDR"] = logcli["LOKI_ADDR"]+':'+logcli["LOKI_HTTP_PORT"]
+# Generate providers configuration
+generate_prometheus_config(redis_client)
+validate_and_generate_provider_configs(providers)
+clean_up_old_provider_configs(providers)
 
-with open('prometheus.yml', 'w', encoding='utf-8') as fp:
-    fp.write("global:\n")
-    fp.write("scrape_configs:\n")
-    fp.write('  - job_name: "loki"\n')
-    fp.write('    basic_auth:\n')
-    fp.write(f'      username: "{logcli["LOKI_API_AUTH_USERNAME"]}"\n')
-    fp.write(f'      password: "{logcli["LOKI_API_AUTH_PASSWORD"]}"\n')
-    fp.write('    static_configs:\n')
-    fp.write(f'      - targets: ["{logcli["LOKI_ADDR"].removeprefix("http://")}"]\n')
-    fp.write('  - job_name: "providers"\n')
-    fp.write('    file_sd_configs:\n')
-    fp.write('      - files:\n')
-    fp.write('        - "/prometheus/prometheus.d/*.yml"\n')
-
-# Get validation file from bin directory
-with open('../bin/validation.json', 'r', encoding='utf-8') as file:
-    schema = json.load(file)
-
-for provider in providers:
-    # load provider info and validate
-    configuration = json.loads(provider['config'])
-    try:
-        validate(instance=configuration, schema=schema)
-    except jsonschema.exceptions.ValidationError as err:
-        print(f"Service provider {provider['module_id']} returned non-valid data.")
-        continue
-
-    # Generate configuration file
-    with open(f"prometheus.d/{provider['module_id']}.yml", 'w', encoding='utf-8') as file:
-        file.write('- targets:\n')
-        for target in configuration['hosts']:
-            file.write(f"    - '{target}'\n")
-        file.write('  labels:\n')
-        file.write(f"    node: {provider['node']}\n")
-        file.write(f"    module: {provider['module_id']}\n")
-        for key, value in configuration['labels'].items():
-            file.write(f"    {key}: {value}\n")
-
-# Check if configuration files exists for non returning service provider
-with os.scandir('prometheus.d') as it:
-    files = list(map(lambda provider: f"{provider['module_id']}.yml", providers))
-    for entry in it:
-        # delete the file if it's not a provider.
-        if entry.is_file() and entry.name not in files:
-            os.remove(entry.path)
+# Generate alertmanager configuration
+generate_alertmanagr_config()
