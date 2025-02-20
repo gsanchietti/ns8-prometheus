@@ -16,13 +16,13 @@ with open('rules.d/nodes.yml', 'w') as f:
 - name: Nodes
   rules:
   - alert: node_offline
-  expr: up == 0
-  for: 0m
-  labels:
-    severity: critical
-  annotations:
-    summary: Cluster node offline (instance {{ $labels.instance }})
-    description: "A cluster target has disappeared. An exporter might be crashed.\\n  VALUE = {{ $value }}\\n  LABELS = {{ $labels }}"
+    expr: up == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Cluster node offline (instance {{ $labels.instance }})
+      description: "A cluster target has disappeared. An exporter might be crashed.\\n  VALUE = {{ $value }}\\n  LABELS = {{ $labels }}"
 ''')
 
 # Write the memory.yml file
@@ -31,13 +31,13 @@ with open('rules.d/memory.yml', 'w') as f:
 - name: Memory
   rules:
   - alert: swap_full
-  expr: ((1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80)
-  for: 2m
-  labels:
-    severity: warning
-  annotations:
-    summary: Host swap is filling up (instance {{ $labels.instance }})
-    description: "Swap is filling up (>80%)\\n  VALUE = {{ $value }}\\n  LABELS = {{ $labels }}"
+    expr: ((1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80)
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host swap is filling up (instance {{ $labels.instance }})
+      description: "Swap is filling up (>80%)\\n  VALUE = {{ $value }}\\n  LABELS = {{ $labels }}"
 ''')
 
 
