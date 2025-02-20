@@ -30,6 +30,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@any:routeadm" \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.max-per-node=1" \
+    --label='org.nethserver.flags=core_module' \
     --label="org.nethserver.images=quay.io/prometheus/prometheus:v3.2.0 quay.io/prometheus/alertmanager:v0.28.0" \
     "${container}"
 # Commit the image
