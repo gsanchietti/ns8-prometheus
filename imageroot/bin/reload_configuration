@@ -47,7 +47,7 @@ def validate_and_generate_provider_configs(redis_client):
         # Generate configuration file
         with open(f"prometheus.d/node_{node_id}.yml", 'w', encoding='utf-8') as file:
             file.write('- targets:\n')
-            file.write(f"    - '{vpn.get('ip_address')}'\n")
+            file.write(f"    - '{vpn.get('ip_address')}:9100'\n")
             file.write('  labels:\n')
             file.write(f"    node: {node_id}\n")
 
