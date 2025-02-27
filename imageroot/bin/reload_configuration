@@ -39,6 +39,12 @@ with open('prometheus.yml', 'w', encoding='utf-8') as fp:
 with open('../bin/validation.json', 'r', encoding='utf-8') as file:
     schema = json.load(file)
 
+# Add all nodes to provider list
+for nkey in redis_client.scan_iter("node/*/vpn"):
+    node_id = nkey.split('/')[1]
+    vpn = redis_client.hgetall(nkey)
+    providers.append({"config": json.dumps({"hosts": [f"{vpn.get('ip_address')}:9100"], "labels": {"core_exporter": node_id}}), 'module_id': f'node_exporter{node_id}', 'node': node_id})
+
 for provider in providers:
     # load provider info and validate
     configuration = json.loads(provider['config'])
